@@ -132,7 +132,9 @@ function sheet(p){const sh=$("#sheet");sh.style.display="block";
  $("#cl").onclick=()=>sh.style.display="none";$("#dr").onclick=()=>goTo(p);if(p.id)$("#im").onclick=()=>{S.me={deck:p.deck,x:p.x,y:p.y};sh.style.display="none";draw();setWhere()}}
 function setWhere(){$("#where").textContent=S.me?`Start point set on Deck ${S.me.deck}. Results sort by distance.`:""}
 const sc=()=>{const r=svg.getBoundingClientRect();return Math.max(vb.w/r.width,vb.h/r.height)};
-function zoom(f,cx,cy){const nw=Math.min(100,Math.max(10,vb.w*f)),k=nw/vb.w;cx=cx??vb.x+vb.w/2;cy=cy??vb.y+vb.h/2;vb={x:cx-(cx-vb.x)*k,y:cy-(cy-vb.y)*k,w:nw,h:vb.h*k};draw()}
+function zoom(f,cx,cy){const r=svg.getBoundingClientRect(),asp=r.height/r.width;
+ const maxW=Math.max(100,100*AR[S.deck]/asp),nw=Math.min(maxW,Math.max(10,vb.w*f)),k=nw/vb.w;
+ cx=cx??vb.x+vb.w/2;cy=cy??vb.y+vb.h/2;vb={x:cx-(cx-vb.x)*k,y:cy-(cy-vb.y)*k,w:nw,h:nw*asp};draw()}
 $("#zi").onclick=()=>zoom(.6);$("#zo").onclick=()=>zoom(1.6);
 const ptr=new Map();let moved=0,pd=0;
 svg.onpointerdown=e=>{svg.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);moved=0;pd=0};

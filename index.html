@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Splendor Guide"><meta name="theme-color" content="#0a4a9e">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Splendor Guide</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--tx:#10243a;--mut:#5d6f84;--ac:#0a6fd1;--ln:#b7c6d8;--red:#d6283b;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1722;--card:#18283a;--tx:#eaf1f8;--mut:#9fb2c6;--ac:#5aa9ff;--ln:#3b5572}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:17px/1.35 -apple-system,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
+header{padding:10px 14px 8px}h1{font-size:22px;margin:0 0 8px}h1 small{font-size:12px;color:var(--mut);font-weight:500}
+input[type=search]{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1px solid var(--ln);background:var(--card);color:var(--tx)}
+main{flex:1;overflow:auto;padding:6px 14px 14px;min-height:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{min-height:88px;border:0;border-radius:16px;background:var(--card);color:var(--tx);font:inherit;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 1px 3px #0002}.tile span{font-size:28px}
+.row{display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 12px;margin:0 0 8px;background:var(--card);border-radius:14px;width:100%;border:0;color:var(--tx);font:inherit;text-align:left}
+.row .e{font-size:26px}.row b{display:block}.row i{font-style:normal;color:var(--mut);font-size:14px}.row .go{margin-left:auto;color:var(--ac);font-weight:600;font-size:15px;white-space:nowrap}
+.chip{display:inline-block;background:var(--card);border-radius:20px;padding:8px 14px;margin:0 6px 8px 0;border:1px solid var(--ln);color:var(--tx);font:inherit;font-size:15px;min-height:44px}
+.note{font-size:13px;color:var(--mut);margin:10px 2px}.back{background:none;border:0;color:var(--ac);font:inherit;font-weight:600;padding:10px 0;min-height:44px}
+#mapv{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+#svgw{flex:1;min-height:0;position:relative;touch-action:none;background:var(--bg)}svg{width:100%;height:100%;display:block}
+.zb{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px;z-index:3}
+.zb button{width:44px;height:44px;border-radius:12px;border:0;background:var(--card);color:var(--tx);font-size:20px;box-shadow:0 1px 3px #0003}.zb .on{background:var(--ac);color:#fff}
+#decks{display:flex;gap:6px;overflow-x:auto;padding:8px 10px;background:var(--card);border-top:1px solid var(--ln)}
+#decks button{flex:0 0 auto;min-width:44px;min-height:44px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);font:inherit;font-weight:700}#decks .on{background:var(--ac);color:#fff;border-color:var(--ac)}
+#sheet{position:absolute;left:10px;right:10px;bottom:70px;max-height:48%;overflow:auto;background:var(--card);border-radius:16px;padding:14px;box-shadow:0 4px 18px #0005;display:none;z-index:4}
+#sheet h3{margin:0 0 2px}#sheet p{margin:4px 0;font-size:15px}#sheet .m{color:var(--mut)}
+#route{position:absolute;left:10px;right:64px;top:10px;z-index:2;background:var(--card);border-radius:14px;padding:10px 12px;box-shadow:0 2px 10px #0004}
+#route .rs{font-size:13px;color:var(--mut)}#route .rt{font-size:19px;font-weight:700;margin:2px 0 8px}#route .chip{margin-bottom:0}#route .chip:disabled{opacity:.4}
+nav{display:flex;background:var(--card);border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;min-height:52px;border:0;background:none;color:var(--mut);font:inherit;font-size:13px;font-weight:600}nav .on{color:var(--ac)}nav span{display:block;font-size:20px}
+[hidden]{display:none!important}
+</style></head><body>
+<header><h1>Carnival Splendor <small id="st">guide</small></h1>
+<input id="q" type="search" placeholder="Search venues, toilets, or a cabin number" aria-label="Search"></header>
+<main id="home"><div class="grid" id="tiles"></div><p class="note" id="where"></p>
+<p class="note" id="ios"></p>
+<p class="note">Unofficial guide for personal use, not affiliated with Carnival. Deck plans © Carnival. Hours and menus are typical only and change by day and itinerary: always check your daily Fun Times. Routes and positions are approximate.</p></main>
+<main id="list" hidden></main>
+<section id="mapv" hidden><div id="svgw"><svg id="svg" role="img" aria-label="Deck map"></svg><div id="route" hidden></div>
+<div class="zb"><button id="zi" aria-label="Zoom in">+</button><button id="zo" aria-label="Zoom out">−</button><button id="ac" aria-label="Show accessible routes overlay">♿</button></div></div>
+<div id="sheet"></div><div id="decks"></div></section>
+<nav><button id="nh" class="on"><span>🏠</span>Home</button><button id="nm"><span>🗺️</span>Map</button><button id="nc"><span>🛏️</span>My cabin</button></nav>
+<script>
+const $=s=>document.querySelector(s);
+const DK={1:"Riviera",2:"Main",3:"Lobby",4:"Atlantic",5:"Promenade",6:"Upper",7:"Empress",8:"Verandah",9:"Lido",10:"Panorama",11:"Spa"};
+const AR={1:6.909,2:6.853,3:7.127,4:6.462,5:7.62,6:6.909,7:6.903,8:6.539,9:6.125,10:5.701,11:6.147};
+const CAT={eat:["🍽️","Eat"],drink:["🍹","Drinks"],wc:["🚻","Restrooms"],lift:["🛗","Elevators"],stair:["🪜","Stairs"],fun:["🎭","Entertainment"],kids:["🧒","Kids"],spa:["💆","Spa & fitness"],shop:["🛍️","Shops"],help:["ℹ️","Help"]};
+const TILES=["eat","drink","wc","lift","stair","fun","kids","spa","shop","help"];
+const FT=" Typical only; check Fun Times.";
+const P=[];let n=0;const add=(name,cat,deck,x,y,hrs,menu,cost)=>P.push({id:++n,name,cat,deck,x,y,hrs:hrs||"",menu:menu||"",cost:cost||""});
+const D=[ // name,cat,deck,fx,fy,hours,menu highlights,cost
+["The Black Pearl Restaurant","eat",3,.5,.5,"Port-day breakfast about 7:00–9:00am; sea-day brunch about 8:30am–12pm; lunch; “Your Time” dinner about 5:15–9:00pm","Open seating. Menus rotate and are shared with the Gold Pearl: a la carte breakfast and lunch, three-course dinner of familiar favourites and international dishes. Also on Deck 4.","Included"],
+["The Gold Pearl Restaurant","eat",3,.5,.93,"Dinner in two set seatings, about 6:00pm and 8:00pm; sea-day tea about 3:00–4:00pm","Three-course dinner with rotating menus. Aft-view seating over the wake. Also on Deck 4.","Included"],
+["Lido Marketplace","eat",9,.5,.52,"Buffet, typically open from early morning to late evening","Self-serve buffet. Busiest on port-day mornings.","Included"],
+["Guy’s Burger Joint","eat",9,.62,.58,"Typically about 12pm–6pm","Fresh burgers (including a veggie option) and hand-cut fries.","Included"],
+["BlueIguana Cantina","eat",9,.38,.58,"Typically breakfast and lunch, sometimes limited hours","Mexican: burritos, tacos and fresh toppings.","Included"],
+["The Deli","eat",9,.5,.86,"Typically lunch and dinner","Hot and cold sandwiches.","Included"],
+["Pizzeria del Capitano","eat",9,.45,.7,"Pizza typically available 24 hours","Fresh pizza by the slice or whole.","Included"],
+["Fahrenheit 555 Steakhouse","eat",11,.5,.93,"Dinner by reservation","Premium steaks, seafood, appetisers, desserts and a wine list. Book onboard or ahead.","Cover charge"],
+["Masala Tiger","eat",10,.5,.8,"Typically lunch and dinner","Indian cuisine.","Check Fun Times"],
+["JavaBlue Café","eat",5,.9,.68,"Typically daytime to late evening","Coffees and pastries.","Extra cost"],
+["Juice & Java","eat",5,.82,.6,"Typically daytime","Juices and coffee.","Extra cost"],
+["Cherry on Top","eat",5,.85,.57,"Typically open daytime to evening","Sweets and candy.","Extra cost"],
+["RedFrog Pub","drink",4,.5,.8,"Typically late morning until late; karaoke some nights","Caribbean rums, beers including ThirstyFrog Red, pub favourites.","Extra cost"],
+["Alchemy Bar","drink",5,.9,.77,"Typically evenings","Craft cocktails.","Extra cost"],
+["Oceanview Bar","drink",5,.5,.5,"Typically afternoon to late","Bar on the Promenade.","Extra cost"],
+["Our House Sports Bar","drink",5,.3,.39,"Typically afternoon to late, event dependent","Sports on screens.","Extra cost"],
+["Grand Piano Bar","drink",5,.85,.81,"Typically evenings","Live piano and sing-alongs.","Extra cost"],
+["Spectacular Spectacular Main Lounge","fun",5,.5,.17,"Showtimes in Fun Times (usually two evening shows)","Main theatre across Decks 3–5.","Included"],
+["Royal Flush Casino","fun",5,.5,.42,"Opens when ship is at sea or away from port; guests 18+","Slots and tables.",""],
+["Red Carpet Dance Club","fun",5,.5,.75,"Typically late night","Dance club.",""],
+["Club O2","fun",5,.3,.62,"Typically evenings","Adults lounge and dance space.",""],
+["The Cool Lounge","fun",5,.2,.81,"Typically evenings","Lounge.",""],
+["El Morocco Aft Lounge","fun",5,.5,.85,"Typically evenings","Lounge and stage at the stern.",""],
+["Carnival Seaside Theater","fun",10,.5,.46,"Movies and events in Fun Times","Big outdoor screen.",""],
+["Alexandria Library","fun",4,.25,.39,"Daytime","Books and games.",""],
+["Camp Ocean","kids",10,.5,.65,"Age groups and hours in Fun Times","Supervised kids’ programme.",""],
+["The Warehouse","kids",5,.1,.69,"Teen activities in Fun Times","Teen hangout.",""],
+["Cloud 9 Spa & Salon","spa",11,.5,.14,"Typically 8am–8pm; appointments recommended","Massage, treatments, salon.","Extra cost"],
+["Fitness Center","spa",11,.3,.15,"Typically open most hours","Gym and fitness studio.","Included"],
+["Splashy Cove / WaterWorks","kids",11,.5,.55,"Daytime when weather allows","Water play area.",""],
+["Guest Services","help",3,.85,.29,"Typically 24 hours","Questions, billing, lost and found.",""],
+["Fun Hub","help",3,.3,.28,"Typically daytime","Shore excursions and activity bookings.",""],
+["Photo Gallery","shop",4,.78,.38,"Typically evenings","Official ship photos.",""],
+["The Fun Shops","shop",5,.12,.3,"Typically open at sea, closed in port","Duty-free and souvenirs.",""],
+["Carnival Adventures","shop",3,.15,.29,"Typically daytime","Future-cruise sales.",""]];
+D.forEach(a=>add(...a));
+const LY=[.27,.56,.83],LN=["forward","midship","aft"];
+for(let d=1;d<=11;d++)LY.forEach((y,i)=>{add(LN[i][0].toUpperCase()+LN[i].slice(1)+" elevators","lift",d,.5,y);add(LN[i][0].toUpperCase()+LN[i].slice(1)+" stairs","stair",d,.4,y);if([3,4,5,9,10,11].includes(d))add("Restrooms · "+LN[i],"wc",d,.62,y+.02)});
+let S={deck:9,cat:null,hl:[],me:null,pin:null,route:null,pend:null,acc:false,ov:false};
+const mdist=(a,b)=>Math.hypot((a.x-b.x)*35,(a.y-b.y)*290);
+const dist=p=>S.me?mdist(p,S.me)+Math.abs(p.deck-S.me.deck)*(p.cat==="lift"?20:70):0;
+// ---- views
+function show(v){["home","list"].forEach(i=>$("#"+i).hidden=i!==v);$("#mapv").hidden=v!=="map";$("#nh").className=v==="map"?"":"on";$("#nm").className=v==="map"?"on":"";if(v==="map")draw()}
+$("#tiles").innerHTML=TILES.map(c=>`<button class="tile" data-c="${c}"><span>${CAT[c][0]}</span>${CAT[c][1]}</button>`).join("");
+$("#tiles").onclick=e=>{const b=e.target.closest(".tile");if(b)showCat(b.dataset.c)};
+const rowHtml=p=>`<button class="row" data-id="${p.id}"><span class="e">${CAT[p.cat][0]}</span><div><b>${p.name}</b><i>Deck ${p.deck} ${DK[p.deck]}${p.cost?" · "+p.cost:""}${p.hrs?"<br>"+p.hrs:""}</i></div><span class="go">Show ›</span></button>`;
+function renderList(title,items){items=items.slice().sort((a,b)=>dist(a)-dist(b)||a.deck-b.deck);
+ $("#list").innerHTML=`<button class="back" id="bk">‹ Back</button><h2 style="margin:0 0 6px">${title}</h2><p class="note">${S.me?`Nearest first from your spot on Deck ${S.me.deck}.`:"Tip: tap the map to set where you are, and results sort by distance."}</p>${items.map(rowHtml).join("")||"<p>No matches.</p>"}`;
+ S.hl=items.map(p=>p.id);show("list");$("#bk").onclick=()=>show("home")}
+function showCat(c){S.cat=c;renderList(CAT[c][1],P.filter(p=>p.cat===c))}
+$("#list").onclick=e=>{const r=e.target.closest(".row");if(r)focus(+r.dataset.id)};
+function focus(id){const p=P.find(x=>x.id===id);S.deck=p.deck;show("map");fit(p.y);sheet(p)}
+$("#q").oninput=e=>{const v=e.target.value.trim().toLowerCase();if(!v){show("home");return}
+ if(/^\d{4}$/.test(v)){cabin(v);return}
+ renderList(`Results for “${e.target.value}”`,P.filter(p=>(p.name+" "+CAT[p.cat][1]+" "+p.hrs+" "+p.menu+(p.cat==="wc"?" toilet bathroom loo":"")+(p.cat==="eat"?" food restaurant":"")).toLowerCase().includes(v)))};
+// cabins: deck from number; position is an estimate
+function cabin(s){const n=+s;let d,f;if(n>=1000&&n<1100){d=10;f=(n-1000)/100}else if(n>=1100&&n<1200){d=11;f=(n-1100)/100}else{d=n>=1200&&n<2000?1:Math.floor(n/1000);f=(n%1000)/500}
+ if(d<1||d>11){alert("Cabin not recognised");return}
+ const c={deck:d,x:n%2?.82:.18,y:.12+Math.min(1,f)*.8,s};S.pin=c;S.deck=d;show("map");fit(c.y);
+ sheet({name:"Cabin "+s,cat:"help",deck:d,x:c.x,y:c.y,hrs:"",menu:"Approximate position only: fore/aft and side are estimated from the number. Check the deck plan.",cost:""})}
+$("#nc").onclick=()=>{const s=prompt("Enter your cabin number (e.g. 8234)");if(s&&/^\d{4}$/.test(s.trim()))cabin(s.trim())};
+// ---- map
+const svg=$("#svg");let vb={x:0,y:0,w:100,h:100};
+const U=(p)=>({x:p.x*100,y:p.y*100*AR[p.deck||S.deck]});
+function fit(fy){const r=svg.getBoundingClientRect();const H=r.height/r.width*100;vb={x:0,y:Math.max(0,fy*100*AR[S.deck]-H/2),w:100,h:H};draw()}
+function draw(){const a=AR[S.deck],H=100*a;
+ let s=`<image href="maps/${S.ov?"a":"d"}${S.deck}.webp" x="0" y="0" width="100" height="${H}" preserveAspectRatio="none"/>`+routeSvg();
+ P.filter(p=>p.deck===S.deck&&(S.cat?p.cat===S.cat:!["wc","lift","stair"].includes(p.cat))).forEach(p=>{const u=U(p);s+=`<g data-id="${p.id}"><circle cx="${u.x}" cy="${u.y}" r="${S.hl.includes(p.id)?3.4:2.8}" fill="#fff" stroke="#0a6fd1" stroke-width=".7"/><text x="${u.x}" y="${u.y+1.3}" font-size="3.4" text-anchor="middle">${CAT[p.cat][0]}</text></g>`});
+ if(S.me&&S.me.deck===S.deck){const u=U(S.me);s+=`<circle cx="${u.x}" cy="${u.y}" r="2.4" fill="#d6283b" stroke="#fff" stroke-width=".8"/><text x="${u.x+3.4}" y="${u.y+1}" font-size="3.4" font-weight="700" fill="#d6283b" stroke="#fff" stroke-width=".5" paint-order="stroke">You</text>`}
+ if(S.pin&&S.pin.deck===S.deck){const u=U(S.pin);s+=`<circle cx="${u.x}" cy="${u.y}" r="2.6" fill="#f59e0b" stroke="#fff" stroke-width=".8"/><text x="${u.x+(u.x>50?-3.6:3.6)}" y="${u.y+1}" font-size="3.2" font-weight="700" text-anchor="${u.x>50?"end":"start"}" fill="#000" stroke="#fff" stroke-width=".6" paint-order="stroke">${S.pin.s}?</text>`}
+ svg.innerHTML=s;svg.setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+ $("#decks").innerHTML=Object.keys(DK).map(d=>`<button data-d="${d}" class="${+d===S.deck?"on":""}" aria-label="Deck ${d} ${DK[d]}">${d}</button>`).join("");$("#ac").className=S.ov?"on":""}
+$("#decks").onclick=e=>{const b=e.target.closest("button");if(b){const fy=(vb.y+vb.h/2)/(100*AR[S.deck]);S.deck=+b.dataset.d;$("#sheet").style.display="none";vb.y=Math.max(0,fy*100*AR[S.deck]-vb.h/2);draw()}};
+$("#ac").onclick=()=>{S.ov=!S.ov;draw()};
+function sheet(p){const sh=$("#sheet");sh.style.display="block";
+ sh.innerHTML=`<h3>${CAT[p.cat][0]} ${p.name}</h3><p class="m">Deck ${p.deck} · ${DK[p.deck]}${p.cost?" · "+p.cost:""}</p>${p.hrs?`<p>🕒 ${p.hrs}</p>`:""}${p.menu?`<p>${p.cat==="eat"?"🍴 ":""}${p.menu}</p>`:""}${p.hrs||p.cat==="eat"?`<p class="m">${FT}</p>`:""}<button class="chip" id="dr" style="background:var(--ac);color:#fff;border-color:var(--ac)">Directions</button>${p.id?`<button class="chip" id="im">Start here</button>`:""}<button class="chip" id="cl">Close</button>`;
+ $("#cl").onclick=()=>sh.style.display="none";$("#dr").onclick=()=>goTo(p);if(p.id)$("#im").onclick=()=>{S.me={deck:p.deck,x:p.x,y:p.y};sh.style.display="none";draw();setWhere()}}
+function setWhere(){$("#where").textContent=S.me?`Start point set on Deck ${S.me.deck}. Results sort by distance.`:""}
+const sc=()=>{const r=svg.getBoundingClientRect();return Math.max(vb.w/r.width,vb.h/r.height)};
+function zoom(f,cx,cy){const nw=Math.min(100,Math.max(10,vb.w*f)),k=nw/vb.w;cx=cx??vb.x+vb.w/2;cy=cy??vb.y+vb.h/2;vb={x:cx-(cx-vb.x)*k,y:cy-(cy-vb.y)*k,w:nw,h:vb.h*k};draw()}
+$("#zi").onclick=()=>zoom(.6);$("#zo").onclick=()=>zoom(1.6);
+const ptr=new Map();let moved=0,pd=0;
+svg.onpointerdown=e=>{svg.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);moved=0;pd=0};
+svg.onpointermove=e=>{if(!ptr.has(e.pointerId))return;const o=ptr.get(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);
+ if(ptr.size===2){const [a,b]=[...ptr.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pd)zoom(pd/d);pd=d;moved=9}
+ else{const k=sc(),dx=(e.clientX-o[0])*k,dy=(e.clientY-o[1])*k;moved+=Math.abs(dx)+Math.abs(dy);vb.x-=dx;vb.y-=dy;svg.setAttribute("viewBox",`${vb.x} ${vb.y} ${vb.w} ${vb.h}`)}};
+svg.onpointerup=e=>{ptr.delete(e.pointerId);pd=0;if(moved>1.2||ptr.size)return;
+ const g=e.target.closest("[data-id]");if(g){sheet(P.find(x=>x.id===+g.dataset.id));return}
+ const r=svg.getBoundingClientRect(),k=sc(),ox=(r.width-vb.w/k)/2,oy=(r.height-vb.h/k)/2;
+ const ux=vb.x+(e.clientX-r.left-ox)*k,uy=vb.y+(e.clientY-r.top-oy)*k;
+ S.me={deck:S.deck,x:Math.min(1,Math.max(0,ux/100)),y:Math.min(1,Math.max(0,uy/(100*AR[S.deck])))};$("#sheet").style.display="none";draw();setWhere();if(navigator.vibrate)navigator.vibrate(10);
+ if(S.pend){const d=S.pend;S.pend=null;goTo(d)}else if(S.route)goTo(S.route.dest)};
+svg.onpointercancel=e=>ptr.delete(e.pointerId);
+// ---- routing graph: one corridor per deck, 3 stair/elevator banks
+const CY=[.12,.27,.4,.56,.7,.83,.92],adj={};
+const nd=id=>{adj[id]=[]},ed=(a,b,c,k)=>{adj[a].push({to:b,c,k});adj[b].push({to:a,c,k})};
+for(let d=1;d<=11;d++){CY.forEach((y,i)=>{nd(`c${d}_${y}`);if(i)ed(`c${d}_${CY[i-1]}`,`c${d}_${y}`,(y-CY[i-1])*290,"w")});
+ LY.forEach(y=>{nd(`e${d}_${y}`);nd(`s${d}_${y}`);ed(`c${d}_${y}`,`e${d}_${y}`,25,"w");ed(`c${d}_${y}`,`s${d}_${y}`,8,"w");if(d>1){ed(`e${d-1}_${y}`,`e${d}_${y}`,5,"e");ed(`s${d-1}_${y}`,`s${d}_${y}`,30,"s")}})}
+const xy=id=>{const t=id[0],[d,y]=id.slice(1).split("_");return{deck:+d,y:+y,x:t==="s"?.4:.5}};
+function findRoute(a,b,acc){
+ const near=p=>{let best,bd=1e9;CY.forEach(y=>{const k=Math.abs(y-p.y)*290;if(k<bd){bd=k;best=`c${p.deck}_${y}`}});return[best,bd+Math.abs(p.x-.5)*35]};
+ const [sa,ca]=near(a),[sb]=near(b);const dd={[sa]:ca},prev={},q=new Set([sa]),done=new Set();
+ while(q.size){let u=null;q.forEach(k=>{if(u===null||dd[k]<dd[u])u=k});q.delete(u);if(done.has(u))continue;done.add(u);if(u===sb)break;
+  adj[u].forEach(e=>{if(acc&&e.k==="s")return;const nc=dd[u]+e.c;if(dd[e.to]===undefined||nc<dd[e.to]){dd[e.to]=nc;prev[e.to]=[u,e.k];q.add(e.to)}})}
+ if(dd[sb]===undefined)return null;
+ const seq=[];for(let u=sb;u;){const p=prev[u];seq.unshift({id:u,k:p?p[1]:null});u=p&&p[0]}
+ const pts=[{deck:a.deck,x:a.x,y:a.y,k:null},...seq.map(s=>({...xy(s.id),k:s.k||"w"})),{deck:b.deck,x:b.x,y:b.y,k:"w"}];
+ const st=[];let w=null,v=null,len=0,vert=0;
+ const fw=lab=>{if(w&&w.len>6){const dir=Math.abs(w.dy*290)>12?(w.dy<0?"forward, toward the bow":"aft, toward the stern"):"a short way";st.push({deck:w.deck,x:w.x,y:w.y,t:`Walk ${dir} about ${Math.max(5,Math.round(w.len))} m to ${lab}`})}w=null};
+ const fv=()=>{if(v)st.push({deck:v.from,x:v.x,y:v.y,t:`Take the ${LN[LY.indexOf(v.y)]} ${v.k==="e"?"elevator":"stairs"} ${v.to>v.from?"up":"down"} to Deck ${v.to} (${DK[v.to]})`});v=null};
+ for(let j=1;j<pts.length;j++){const p=pts[j-1],c=pts[j];
+  if(p.deck!==c.deck){vert+=Math.abs(c.deck-p.deck);fw(`the ${LN[LY.indexOf(p.y)]} ${c.k==="e"?"elevators":"stairs"}`);if(v&&v.k===c.k)v.to=c.deck;else{fv();v={k:c.k,from:p.deck,to:c.deck,x:p.x,y:p.y}}}
+  else{fv();const l=Math.hypot((c.x-p.x)*35,(c.y-p.y)*290);len+=l;if(!w)w={deck:p.deck,x:p.x,y:p.y,dy:0,len:0};w.dy+=c.y-p.y;w.len+=l}}
+ fv();fw(b.name);st.push({deck:b.deck,x:b.x,y:b.y,t:`You’ve arrived: ${b.name}${b.x<.3?" (port side, left when facing forward)":b.x>.7?" (starboard side, right when facing forward)":""}`});
+ const m=Math.round(len);return{pts,steps:st,m,min:Math.max(1,Math.round(m/70+vert*.5))}}
+function panel(h){const r=$("#route");r.hidden=!h;r.innerHTML=h||""}
+function goTo(p){const d={name:p.name,deck:p.deck,x:p.x,y:p.y};$("#sheet").style.display="none";
+ if(!S.me){S.pend=d;panel(`<div class="rt">Where are you?</div><div class="rs">Tap the map to set your position. Directions to ${d.name} will appear.</div><button class="chip" id="rx">Cancel</button>`);$("#rx").onclick=endRoute;return}
+ const r=findRoute(S.me,d,S.acc);if(!r){panel("No route found.");return}
+ S.route={dest:d,pts:r.pts,steps:r.steps,i:0,m:r.m,min:r.min};S.pend=null;stepTo(0)}
+function stepTo(i){const r=S.route;r.i=i;const s=r.steps[i];S.deck=s.deck;const rr=svg.getBoundingClientRect(),H=rr.height/rr.width*40;vb={x:Math.max(0,s.x*100-20),y:Math.max(0,s.y*100*AR[s.deck]-H/2),w:40,h:H};draw();renderPanel()}
+function renderPanel(){const r=S.route,s=r.steps[r.i];
+ panel(`<div class="rs">Step ${r.i+1} of ${r.steps.length} · about ${r.m} m, ${r.min} min · Deck ${s.deck}</div><div class="rt">${s.t}</div><button class="chip" id="rp" ${r.i?"":"disabled"}>‹ Back</button><button class="chip" id="rn" ${r.i<r.steps.length-1?"":"disabled"}>Next ›</button><label class="chip"><input type="checkbox" id="ra" ${S.acc?"checked":""} style="width:auto;margin-right:6px;vertical-align:middle">Step-free</label><button class="chip" id="rx">End</button>`);
+ $("#rp").onclick=()=>stepTo(r.i-1);$("#rn").onclick=()=>stepTo(r.i+1);$("#rx").onclick=endRoute;$("#ra").onchange=e=>{S.acc=e.target.checked;goTo(r.dest)}}
+function endRoute(){S.route=null;S.pend=null;panel("");draw()}
+function routeSvg(){const r=S.route;if(!r)return"";let s="",seg=[];
+ const out=()=>{if(seg.length>1){const pl=seg.map(p=>{const u=U(p);return u.x+","+u.y}).join(" ");s+=`<polyline points="${pl}" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><polyline points="${pl}" fill="none" stroke="#1a73e8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 2.4"/>`}seg=[]};
+ r.pts.forEach(p=>{if(p.deck===S.deck)seg.push(p);else out()});out();
+ if(r.dest.deck===S.deck){const u=U(r.dest);s+=`<circle cx="${u.x}" cy="${u.y}" r="2.6" fill="#1a9e55" stroke="#fff" stroke-width=".8"/>`}return s}
+$("#nh").onclick=()=>show("home");$("#nm").onclick=()=>{S.cat=null;show("map");fit(.5)};
+// ---- offline
+if(!(navigator.standalone||matchMedia("(display-mode:standalone)").matches))$("#ios").textContent="To use offline: tap the Share button in Safari, then Add to Home Screen, and open the app once while online.";
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").then(()=>navigator.serviceWorker.ready).then(()=>{$("#st").textContent="✓ ready offline"}).catch(()=>{});
+</script></body></html>

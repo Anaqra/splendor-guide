@@ -51,17 +51,9 @@ const AR={1:6.909,2:6.853,3:7.127,4:6.462,5:7.62,6:6.909,7:6.903,8:6.539,9:6.125
 const CAT={eat:["🍽️","Eat"],drink:["🍹","Drinks"],wc:["🚻","Restrooms"],lift:["🛗","Elevators"],stair:["🪜","Stairs"],fun:["🎭","Entertainment"],kids:["🧒","Kids"],spa:["💆","Spa & fitness"],shop:["🛍️","Shops"],help:["ℹ️","Help"]};
 const TILES=["eat","drink","wc","lift","stair","fun","kids","spa","shop","help"];
 const FT=" Typical only; check Fun Times.";
-const P=[];let n=0;const add=(name,cat,deck,x,y,hrs,menu,cost)=>P.push({id:++n,name,cat,deck,x,y,hrs:hrs||"",menu:menu||"",cost:cost||""});
+const P=[];let n=0;const add=(name,cat,deck,x,y,hrs,menu,cost,meals)=>P.push({id:++n,name,cat,deck,x,y,hrs:hrs||"",menu:menu||"",cost:cost||"",meals:meals||[]});
 const D=[ // name,cat,deck,fx,fy,hours,menu highlights,cost
-["The Black Pearl Restaurant","eat",3,.5,.5,"Port-day breakfast about 7:00–9:00am; sea-day brunch about 8:30am–12pm; lunch; “Your Time” dinner about 5:15–9:00pm","Open seating. Menus rotate and are shared with the Gold Pearl: a la carte breakfast and lunch, three-course dinner of familiar favourites and international dishes. Also on Deck 4.","Included"],
-["The Gold Pearl Restaurant","eat",3,.5,.93,"Dinner in two set seatings, about 6:00pm and 8:00pm; sea-day tea about 3:00–4:00pm","Three-course dinner with rotating menus. Aft-view seating over the wake. Also on Deck 4.","Included"],
-["Lido Marketplace","eat",9,.5,.52,"Buffet, typically open from early morning to late evening","Self-serve buffet. Busiest on port-day mornings.","Included"],
-["Guy’s Burger Joint","eat",9,.62,.58,"Typically about 12pm–6pm","Fresh burgers (including a veggie option) and hand-cut fries.","Included"],
-["BlueIguana Cantina","eat",9,.38,.58,"Typically breakfast and lunch, sometimes limited hours","Mexican: burritos, tacos and fresh toppings.","Included"],
-["The Deli","eat",9,.5,.86,"Typically lunch and dinner","Hot and cold sandwiches.","Included"],
-["Pizzeria del Capitano","eat",9,.45,.7,"Pizza typically available 24 hours","Fresh pizza by the slice or whole.","Included"],
 ["Fahrenheit 555 Steakhouse","eat",11,.5,.93,"Dinner by reservation","Premium steaks, seafood, appetisers, desserts and a wine list. Book onboard or ahead.","Cover charge"],
-["Masala Tiger","eat",10,.5,.8,"Typically lunch and dinner","Indian cuisine.","Check Fun Times"],
 ["JavaBlue Café","eat",5,.9,.68,"Typically daytime to late evening","Coffees and pastries.","Extra cost"],
 ["Juice & Java","eat",5,.82,.6,"Typically daytime","Juices and coffee.","Extra cost"],
 ["Cherry on Top","eat",5,.85,.57,"Typically open daytime to evening","Sweets and candy.","Extra cost"],
@@ -87,7 +79,18 @@ const D=[ // name,cat,deck,fx,fy,hours,menu highlights,cost
 ["Fun Hub","help",3,.3,.28,"Typically daytime","Shore excursions and activity bookings.",""],
 ["Photo Gallery","shop",4,.78,.38,"Typically evenings","Official ship photos.",""],
 ["The Fun Shops","shop",5,.12,.3,"Typically open at sea, closed in port","Duty-free and souvenirs.",""],
-["Carnival Adventures","shop",3,.15,.29,"Typically daytime","Future-cruise sales.",""]];
+["Carnival Adventures","shop",3,.15,.29,"Typically daytime","Future-cruise sales.",""],
+["The Black Pearl Restaurant", "eat", 3, 0.5, 0.5, "Breakfast on port days, Sea Day Brunch on sea days, and dinner (open seating or set times; confirm in Fun Times). Also on Deck 4.", "", "Included", [["Breakfast", "Table-service breakfast on most port days, included."], ["Sea Day Brunch", "Sea days only. Takes the place of separate breakfast and lunch service in the dining room."], ["Dinner", "Three courses (starter, main, dessert) with a menu that changes each night. A fixed “chef’s recommendation” section is always offered; recent samples included braised short rib, French onion soup and veal piccata. Newer menus add a “Crew Favorites” dish, for example kung pao chicken. Steakhouse-style selections cost extra, and complimentary lobster is only on cruises of 6 nights or longer. Gluten-free and kids’ menus are available on request."], ["Lunch", "Not served every day. Check the Fun Times."]]],
+["The Gold Pearl Restaurant", "eat", 3, 0.5, 0.93, "Dinner usually in two set seatings, about 6:00pm and 8:00pm; also breakfast and Sea Day Brunch. Also on Deck 4.", "", "Included", [["Breakfast", "Table-service breakfast on most port days, included."], ["Sea Day Brunch", "Sea days only. Takes the place of separate breakfast and lunch service in the dining room."], ["Dinner", "Three courses (starter, main, dessert) with a menu that changes each night. A fixed “chef’s recommendation” section is always offered; recent samples included braised short rib, French onion soup and veal piccata. Newer menus add a “Crew Favorites” dish, for example kung pao chicken. Steakhouse-style selections cost extra, and complimentary lobster is only on cruises of 6 nights or longer. Gluten-free and kids’ menus are available on request."], ["Lunch", "Not served every day. Check the Fun Times."]]],
+["Lido Marketplace", "eat", 9, 0.5, 0.52, "Buffet, typically open from early morning to late evening", "", "Included", [["Breakfast, lunch and dinner", "Rotating self-serve buffet with themed stations that change daily."], ["Newer additions reported fleet-wide", "Breakfast bagel sandwiches and family-style lunch choices. Availability may vary on Splendor."]]],
+["Guy’s Burger Joint", "eat", 9, 0.62, 0.58, "Typically lunch, about 12pm–6pm", "", "Included", [["Lunch and afternoon", "Fresh-cooked burgers (including a veggie option) and fries, with a toppings bar. The current menu is a PDF on Carnival’s site."]]],
+["BlueIguana Cantina", "eat", 9, 0.38, 0.58, "Typically breakfast and lunch", "", "Included", [["Breakfast", "Breakfast burritos."], ["Lunch", "Tacos, burritos and a toppings bar. Daily rotating specials were announced for 2026."]]],
+["Masala Tiger", "eat", 10, 0.5, 0.8, "Lunch and dinner. Exclusive to Splendor.", "", "Check Fun Times", [["Lunch", "Self-serve buffet of Indian dishes with rotating specials."], ["Dinner", "Served à la carte."]]],
+["Mongolian Wok", "eat", 9, 0.35, 0.72, "Lunch only, typically", "", "Included", [["Lunch", "Build-your-own stir-fry. Splendor is one of the ships offering it."]]],
+["Ol’ Fashioned BBQ", "eat", 9, 0.65, 0.72, "Lunch only, typically", "", "Included", [["Lunch", "Barbecue-style lunch. Splendor is one of the ships offering it."]]],
+["The Deli", "eat", 9, 0.5, 0.86, "Typically lunch and dinner", "", "Included", [["Lunch and dinner", "Hot and cold sandwiches."]]],
+["Pizzeria del Capitano", "eat", 9, 0.45, 0.7, "Pizza typically available 24 hours", "", "Included", [["All day", "Fresh pizza by the slice."]]]
+];
 D.forEach(a=>add(...a));
 const LY=[.27,.56,.83],LN=["forward","midship","aft"];
 for(let d=1;d<=11;d++)LY.forEach((y,i)=>{add(LN[i][0].toUpperCase()+LN[i].slice(1)+" elevators","lift",d,.5,y);add(LN[i][0].toUpperCase()+LN[i].slice(1)+" stairs","stair",d,.4,y);if([3,4,5,9,10,11].includes(d))add("Restrooms · "+LN[i],"wc",d,.62,y+.02)});
@@ -107,7 +110,7 @@ $("#list").onclick=e=>{const r=e.target.closest(".row");if(r)focus(+r.dataset.id
 function focus(id){const p=P.find(x=>x.id===id);S.deck=p.deck;show("map");fit(p.y);sheet(p)}
 $("#q").oninput=e=>{const v=e.target.value.trim().toLowerCase();if(!v){show("home");return}
  if(/^\d{4}$/.test(v)){cabin(v);return}
- renderList(`Results for “${e.target.value}”`,P.filter(p=>(p.name+" "+CAT[p.cat][1]+" "+p.hrs+" "+p.menu+(p.cat==="wc"?" toilet bathroom loo":"")+(p.cat==="eat"?" food restaurant":"")).toLowerCase().includes(v)))};
+ renderList(`Results for “${e.target.value}”`,P.filter(p=>(p.name+" "+CAT[p.cat][1]+" "+p.hrs+" "+p.menu+" "+p.meals.join(" ")+(p.cat==="wc"?" toilet bathroom loo":"")+(p.cat==="eat"?" food restaurant":"")).toLowerCase().includes(v)))};
 // cabins: deck from number; position is an estimate
 function cabin(s){const n=+s;let d,f;if(n>=1000&&n<1100){d=10;f=(n-1000)/100}else if(n>=1100&&n<1200){d=11;f=(n-1100)/100}else{d=n>=1200&&n<2000?1:Math.floor(n/1000);f=(n%1000)/500}
  if(d<1||d>11){alert("Cabin not recognised");return}
@@ -128,7 +131,7 @@ function draw(){const a=AR[S.deck],H=100*a;
 $("#decks").onclick=e=>{const b=e.target.closest("button");if(b){const fy=(vb.y+vb.h/2)/(100*AR[S.deck]);S.deck=+b.dataset.d;$("#sheet").style.display="none";vb.y=Math.max(0,fy*100*AR[S.deck]-vb.h/2);draw()}};
 $("#ac").onclick=()=>{S.ov=!S.ov;draw()};
 function sheet(p){const sh=$("#sheet");sh.style.display="block";
- sh.innerHTML=`<h3>${CAT[p.cat][0]} ${p.name}</h3><p class="m">Deck ${p.deck} · ${DK[p.deck]}${p.cost?" · "+p.cost:""}</p>${p.hrs?`<p>🕒 ${p.hrs}</p>`:""}${p.menu?`<p>${p.cat==="eat"?"🍴 ":""}${p.menu}</p>`:""}${p.hrs||p.cat==="eat"?`<p class="m">${FT}</p>`:""}<button class="chip" id="dr" style="background:var(--ac);color:#fff;border-color:var(--ac)">Directions</button>${p.id?`<button class="chip" id="im">Start here</button>`:""}<button class="chip" id="cl">Close</button>`;
+ sh.innerHTML=`<h3>${CAT[p.cat][0]} ${p.name}</h3><p class="m">Deck ${p.deck} · ${DK[p.deck]}${p.cost?" · "+p.cost:""}</p>${p.hrs?`<p>🕒 ${p.hrs}</p>`:""}${p.menu?`<p>${p.menu}</p>`:""}${(p.meals||[]).map(m=>`<p><b>${m[0]}</b><br>${m[1]}</p>`).join("")}${p.cat==="eat"?`<p class="m">Menus change daily and by itinerary. <a href="https://cruise.blog/2024/02/carnival-menus-main-dining-room-specialty-restaurants-more" target="_blank" rel="noopener">Full menu PDFs</a> (needs internet).</p>`:""}${p.hrs||p.cat==="eat"?`<p class="m">${FT}</p>`:""}<button class="chip" id="dr" style="background:var(--ac);color:#fff;border-color:var(--ac)">Directions</button>${p.id?`<button class="chip" id="im">Start here</button>`:""}<button class="chip" id="cl">Close</button>`;
  $("#cl").onclick=()=>sh.style.display="none";$("#dr").onclick=()=>goTo(p);if(p.id)$("#im").onclick=()=>{S.me={deck:p.deck,x:p.x,y:p.y};sh.style.display="none";draw();setWhere()}}
 function setWhere(){$("#where").textContent=S.me?`Start point set on Deck ${S.me.deck}. Results sort by distance.`:""}
 const sc=()=>{const r=svg.getBoundingClientRect();return Math.max(vb.w/r.width,vb.h/r.height)};
